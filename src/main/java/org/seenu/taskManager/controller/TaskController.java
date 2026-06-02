@@ -29,19 +29,19 @@ public class TaskController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/pasttask")
-    public ResponseEntity<List<TaskResponceDto>> getAllPastTasks(HttpServletRequest request)
+    public ResponseEntity<List<TaskResponceDto>> getAllPastTasks()
     {
         List<TaskResponceDto> allOldTasks=taskService.getAllOldTasks();
         return ResponseEntity.ok(allOldTasks);
     }
     @GetMapping("/futuretask")
-    public ResponseEntity<List<TaskResponceDto>> getAllFutureTasks(HttpServletRequest request)
+    public ResponseEntity<List<TaskResponceDto>> getAllFutureTasks()
     {
         List<TaskResponceDto> allNewTasks=taskService.getAllNewTasks();
         return ResponseEntity.ok(allNewTasks);
     }
     @GetMapping("/task/{day}")
-    public ResponseEntity<List<TaskResponceDto>> getTasksByDay(@PathVariable LocalDateTime day, HttpServletRequest request)
+    public ResponseEntity<List<TaskResponceDto>> getTasksByDay(@PathVariable LocalDateTime day)
     {
         List<TaskResponceDto> todayTasks=taskService.getAllTaskByDay(day);
         return ResponseEntity.ok(todayTasks);

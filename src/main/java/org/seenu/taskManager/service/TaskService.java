@@ -48,7 +48,7 @@ public class TaskService {
         LocalDateTime today=LocalDateTime.now();
         LocalDateTime past=today.minusDays(15);
         List<Task> myalltasks=taskRepository.getUserTask(currentUser.getId(),today,past);
-        List<TaskResponceDto> taskResponceDtoList=new ArrayList<TaskResponceDto>();
+        List<TaskResponceDto> taskResponceDtoList=new ArrayList<>();
         myalltasks.stream().forEach(task->{
             TaskResponceDto taskResponceDto=new TaskResponceDto();
             taskResponceDto.setTaskName(task.getTaskName());
@@ -66,7 +66,7 @@ public class TaskService {
         LocalDateTime today=LocalDateTime.now();
         LocalDateTime future=today.plusDays(15);
         List<Task> myallNewtasks=taskRepository.getUserTask(currentUser.getId(),future,today);
-        List<TaskResponceDto> taskResponceDtoList=new ArrayList<TaskResponceDto>();
+        List<TaskResponceDto> taskResponceDtoList=new ArrayList<>();
         myallNewtasks.stream().forEach(task->{
             TaskResponceDto taskResponceDto=new TaskResponceDto();
             taskResponceDto.setTaskName(task.getTaskName());
@@ -82,7 +82,7 @@ public class TaskService {
     public List<TaskResponceDto> getAllTaskByDay(LocalDateTime day) {
         TaskUser currentUser=getTheContextUser();
         List<Task> todayTasks=taskRepository.findByDueDate(day);
-        List<TaskResponceDto> taskResponceDtoList=new ArrayList<TaskResponceDto>();
+        List<TaskResponceDto> taskResponceDtoList=new ArrayList<>();
         todayTasks.stream().forEach(task->{
             TaskResponceDto taskResponceDto=new TaskResponceDto();
             taskResponceDto.setTaskName(task.getTaskName());
