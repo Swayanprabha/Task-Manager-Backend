@@ -18,4 +18,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> getUserTask(@Param("userId") Long id,@Param("today") LocalDateTime today, @Param("past") LocalDateTime past);
 
     List<Task> findByDueDate(LocalDateTime day);
+    @Query("select distinct t.dueDate from Task t where t.taskUser.id=:userId and t.dueDate between :start and :end")
+    List<LocalDateTime> findDaysWithTask(@Param("userId") Long id,@Param("start") LocalDateTime start, @Param("end")LocalDateTime end);
 }

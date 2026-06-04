@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -93,5 +94,16 @@ public class TaskService {
 
         });
         return taskResponceDtoList;
+    }
+
+    public List<Integer> getDaysWithTask() {
+        TaskUser currentUser=getTheContextUser();
+        LocalDateTime start = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime end = LocalDateTime.now().withDayOfMonth(
+                LocalDateTime.now().toLocalDate().lengthOfMonth()
+        ).withHour(23).withMinute(59).withSecond(59);
+        List<LocalDateTime> hasTask=taskRepository.findDaysWithTask(currentUser.getId(),start,end);
+        return hasTask.stream().map((day)->day.getDayOfMonth()).collect(Collectors.toList());
+
     }
 }
