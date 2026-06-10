@@ -28,22 +28,11 @@ public class TaskController {
         String result=taskService.addNewTask(userTaskSaveRequestDto);
         return ResponseEntity.ok(result);
     }
-    @GetMapping("/pasttask")
-    public ResponseEntity<List<TaskResponceDto>> getAllPastTasks()
-    {
-        List<TaskResponceDto> allOldTasks=taskService.getAllOldTasks();
-        return ResponseEntity.ok(allOldTasks);
-    }
-    @GetMapping("/futuretask")
-    public ResponseEntity<List<TaskResponceDto>> getAllFutureTasks()
-    {
-        List<TaskResponceDto> allNewTasks=taskService.getAllNewTasks();
-        return ResponseEntity.ok(allNewTasks);
-    }
     @GetMapping("/task/{day}")
-    public ResponseEntity<List<TaskResponceDto>> getTasksByDay(@PathVariable LocalDateTime day)
+    public ResponseEntity<List<TaskResponceDto>> getTasksByDay(@PathVariable String day)
     {
-        List<TaskResponceDto> todayTasks=taskService.getAllTaskByDay(day);
+        LocalDateTime today=LocalDateTime.parse(day);
+        List<TaskResponceDto> todayTasks=taskService.getAllTaskByDay(today);
         return ResponseEntity.ok(todayTasks);
     }
 }

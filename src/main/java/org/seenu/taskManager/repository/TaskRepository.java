@@ -14,8 +14,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     boolean existsByTaskUserAndDueDate(TaskUser currentUser, LocalDateTime  dueDate);
     Task save(Task task);
 
-    @Query("select t from Task t where t.taskUser.id=:userId and t.dueDate between :past and :today")
-    List<Task> getUserTask(@Param("userId") Long id,@Param("today") LocalDateTime today, @Param("past") LocalDateTime past);
+    @Query("select t from Task t where t.taskUser.id=:userId and t.dueDate between :start and :end")
+    List<Task> getUserTask(@Param("userId") Long id,@Param("start") LocalDateTime today, @Param("end") LocalDateTime past);
 
     List<Task> findByDueDate(LocalDateTime day);
     @Query("select distinct t.dueDate from Task t where t.taskUser.id=:userId and t.dueDate between :start and :end")
