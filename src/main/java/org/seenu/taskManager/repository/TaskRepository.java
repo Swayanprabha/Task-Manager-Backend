@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
@@ -20,4 +21,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByDueDate(LocalDateTime day);
     @Query("select distinct t.dueDate from Task t where t.taskUser.id=:userId and t.dueDate between :start and :end")
     List<LocalDateTime> findDaysWithTask(@Param("userId") Long id,@Param("start") LocalDateTime start, @Param("end")LocalDateTime end);
+
+    @Override
+    Optional<Task> findById(Long id);
+    void deleteById(Long id);
 }

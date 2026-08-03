@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.seenu.taskManager.dto.TaskResponceDto;
 import org.seenu.taskManager.dto.UserTaskSaveRequestDto;
-
-import org.seenu.taskManager.entity.Task;
 import org.seenu.taskManager.service.TaskService;
 import org.springframework.http.ResponseEntity;
 
@@ -35,4 +33,17 @@ public class TaskController {
         List<TaskResponceDto> todayTasks=taskService.getAllTaskByDay(today);
         return ResponseEntity.ok(todayTasks);
     }
+    @DeleteMapping("/deletetask/{id}")
+    public ResponseEntity<String> deteteMyTask(@PathVariable Long id)
+    {
+        String result=taskService.deleteMyTask(id);
+        return ResponseEntity.ok(result);
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateMyTask(@PathVariable Long id,@RequestBody UserTaskSaveRequestDto userTaskSaveRequestDto)
+    {
+        String result=taskService.updateMyTask(id,userTaskSaveRequestDto);
+        return ResponseEntity.ok(result);
+    }
+
 }

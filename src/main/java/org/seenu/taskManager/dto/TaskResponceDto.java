@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class TaskResponceDto {
+    private Long id;
     private String taskName;
     private boolean completed;
     private LocalDateTime dueDate;

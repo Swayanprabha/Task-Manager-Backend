@@ -56,4 +56,27 @@ public class TaskService {
         return hasTask.stream().map((day)->day.getDayOfMonth()).collect(Collectors.toList());
 
     }
+
+    public String deleteMyTask(Long id) {
+        Task mytask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("task not found."));
+        TaskUser currentUser=userAuthUtil.getTheContextUser();
+        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new RuntimeException("you r not authorised to update this task");
+        taskRepository.deleteById(id);
+        return "task deleted successfully.";
+
+    }
+
+    public String updateMyTask(Long id, UserTaskSaveRequestDto userTaskSaveRequestDto) {
+        Task mytask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("task not found."));
+        TaskUser currentUser=userAuthUtil.getTheContextUser();
+        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new RuntimeException("you r not authorised to update this task");
+        mytask.setDueDate(userTaskSaveRequestDto.getDueDate());
+        mytask.setTaskName(userTaskSaveRequestDto.getTaskName());
+        if (userTaskSaveRequestDto.isCompleted()) mytask.setCompleted(true);
+        if (userTaskSaveRequestDto.isIspriority()) mytask.setIspriority(true);
+        taskRepository.save(mytask);
+        return "Task updated successfully.";
+    }
+
 }
+
