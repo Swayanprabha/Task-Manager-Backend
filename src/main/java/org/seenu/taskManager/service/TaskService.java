@@ -1,6 +1,6 @@
 package org.seenu.taskManager.service;
 
-import org.seenu.taskManager.dto.TaskResponceDto;
+import org.seenu.taskManager.dto.TaskResponseDto;
 import org.seenu.taskManager.dto.UserTaskSaveRequestDto;
 import org.seenu.taskManager.entity.Task;
 import org.seenu.taskManager.entity.TaskUser;
@@ -10,16 +10,23 @@ import org.seenu.taskManager.util.UserAuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
-    TaskRepository taskRepository;
-    UserAuthUtil  userAuthUtil;
-    TaskService(TaskRepository taskRepository, UserAuthUtil userAuthUtil) {
+    private final TaskRepository taskRepository;
+    private final UserAuthUtil  userAuthUtil;
+    private final HashMap<String,FilterService> filterServiceMap;
+    TaskService(TaskRepository taskRepository, UserAuthUtil userAuthUtil,List<FilterService> filterServices) {
         this.taskRepository = taskRepository;
         this.userAuthUtil = userAuthUtil;
+        this.filterServiceMap = new HashMap<>();
+        for(FilterService filterService: filterServices) {
+            String filterType = filterService.getFilterType();
+            filterServiceMap.put(filterType,filterService);
+        }
     }
 
     public String addNewTask(UserTaskSaveRequestDto userTaskSaveRequestDto) {
@@ -38,13 +45,13 @@ public class TaskService {
         Task savedTask=taskRepository.save(newTask);
         return "Task added successfully.";
     }
-    public List<TaskResponceDto> getAllTaskByDay(LocalDateTime day) {
+    public List<TaskResponseDto> getAllTaskByDay(LocalDateTime day) {
         TaskUser currentUser=userAuthUtil.getTheContextUser();
         LocalDateTime today=day.withHour(0).withMinute(0).withSecond(0);
         LocalDateTime future=day.withHour(23).withMinute(59).withSecond(59);
         List<Task> myallNewtasks=taskRepository.getUserTask(currentUser.getId(),today,future);
-        List<TaskResponceDto> taskResponceDtoList= TaskUtil.giveMyTask(myallNewtasks);
-        return taskResponceDtoList;
+        List<TaskResponseDto> taskResponseDtoList = TaskUtil.giveMyTask(myallNewtasks);
+        return taskResponseDtoList;
     }
     public List<Integer> getDaysWithTask() {
         TaskUser currentUser=userAuthUtil.getTheContextUser();
@@ -78,5 +85,13 @@ public class TaskService {
         return "Task updated successfully.";
     }
 
+    public List<TaskResponseDto> getFilteredTasks(String filterType) {
+       if(filterType==null)throw new RuntimeException("filter type is required");
+       FilterService filterService=filterServiceMap.get(filterType);
+       if(filterService==null)throw new RuntimeException("invalid filter type");
+       List<Task> FilteredTasks=filterService.getMyTasksByFilter();
+       List<TaskResponseDto> filteredTaskDto=TaskUtil.giveMyTask(FilteredTasks);
+       return filteredTaskDto;
+    }
 }
 

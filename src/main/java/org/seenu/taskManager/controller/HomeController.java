@@ -7,14 +7,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-    private TaskService taskService;
+    private final TaskService taskService;
     HomeController(TaskService taskService) {
         this.taskService = taskService;
     }

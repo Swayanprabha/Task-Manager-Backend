@@ -2,7 +2,6 @@ package org.seenu.taskManager.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,7 +23,7 @@ public class TaskUser implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy="taskUser",cascade = CascadeType.ALL,fetch=FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(mappedBy="taskUser",fetch=FetchType.LAZY)
     private List<Task> tasks=new ArrayList<>();
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskResponceDto {
+public class TaskResponseDto {
     private Long id;
     private String taskName;
     private boolean completed;
