@@ -3,6 +3,7 @@ package org.seenu.taskManager.service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.seenu.taskManager.ExceptionHandle.UserAlreadyExistsException;
 import org.seenu.taskManager.dto.UserLoginDto;
 import org.seenu.taskManager.dto.UserSignUpRequestDto;
 import org.seenu.taskManager.entity.TaskUser;
@@ -33,7 +34,7 @@ public class UserSignUpService {
     public String signUp( UserSignUpRequestDto userSignUpRequestDto) throws Exception {
         String mail=userSignUpRequestDto.getEmail();
         Optional<TaskUser> taskuser=taskUserRepository.findByEmail(mail);
-        if(taskuser.isPresent())return "User already exists with email: "+mail;
+        if(taskuser.isPresent())throw new UserAlreadyExistsException("this user already exists");
         String encriptedPassword=bCryptPasswordEncoder.encode(userSignUpRequestDto.getPassword());
         TaskUser newUser = new TaskUser();
         newUser.setName(userSignUpRequestDto.getName());

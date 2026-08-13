@@ -11,4 +11,5 @@ public class TaskResponseDto {
     private boolean completed;
     private LocalDateTime dueDate;
     private boolean ispriority;
+
 }

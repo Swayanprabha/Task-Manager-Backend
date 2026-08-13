@@ -1,5 +1,7 @@
 package org.seenu.taskManager.service;
 
+import org.seenu.taskManager.ExceptionHandle.InvalidUserException;
+import org.seenu.taskManager.ExceptionHandle.ResourceNotFoundException;
 import org.seenu.taskManager.dto.TaskResponseDto;
 import org.seenu.taskManager.dto.UserTaskSaveRequestDto;
 import org.seenu.taskManager.entity.Task;
@@ -65,18 +67,18 @@ public class TaskService {
     }
 
     public String deleteMyTask(Long id) {
-        Task mytask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("task not found."));
+        Task mytask = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("the requested task not found."));
         TaskUser currentUser=userAuthUtil.getTheContextUser();
-        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new RuntimeException("you r not authorised to update this task");
+        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new InvalidUserException("you r not authorised to update this task");
         taskRepository.deleteById(id);
         return "task deleted successfully.";
 
     }
 
     public String updateMyTask(Long id, UserTaskSaveRequestDto userTaskSaveRequestDto) {
-        Task mytask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("task not found."));
+        Task mytask = taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("the requested task not found."));
         TaskUser currentUser=userAuthUtil.getTheContextUser();
-        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new RuntimeException("you r not authorised to update this task");
+        if(mytask.getTaskUser().getId()!=currentUser.getId())throw new InvalidUserException("you r not authorised to update this task");
         mytask.setDueDate(userTaskSaveRequestDto.getDueDate());
         mytask.setTaskName(userTaskSaveRequestDto.getTaskName());
         if (userTaskSaveRequestDto.isCompleted()) mytask.setCompleted(true);
@@ -85,13 +87,16 @@ public class TaskService {
         return "Task updated successfully.";
     }
 
-    public List<TaskResponseDto> getFilteredTasks(String filterType) {
-       if(filterType==null)throw new RuntimeException("filter type is required");
-       FilterService filterService=filterServiceMap.get(filterType);
-       if(filterService==null)throw new RuntimeException("invalid filter type");
-       List<Task> FilteredTasks=filterService.getMyTasksByFilter();
-       List<TaskResponseDto> filteredTaskDto=TaskUtil.giveMyTask(FilteredTasks);
-       return filteredTaskDto;
+    public List<TaskResponseDto> getFilteredTasks(List<String> filterType, String date) {
+       List<TaskResponseDto> result= this.getAllTaskByDay(LocalDateTime.parse(date));
+       if(result.isEmpty())return result;
+       if (filterType == null || filterType.isEmpty()) return result;
+       for(String type: filterType) {
+           FilterService filterService = filterServiceMap.get(type);
+           if (filterService == null) throw new RuntimeException("sorry, u have entrered an invalid filter type");
+           result = filterService.getMyTasksByFilter(result);
+       }
+        return result;
     }
 }
 

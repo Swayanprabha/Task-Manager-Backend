@@ -42,10 +42,11 @@ public class TaskController {
         String result=taskService.updateMyTask(id,userTaskSaveRequestDto);
         return ResponseEntity.ok(result);
     }
-    @GetMapping("/filter_task/{filterType}")
-    public ResponseEntity<List<TaskResponseDto>> getTasksByFilter(@PathVariable String filterType)
+    @GetMapping("/filter")
+    public ResponseEntity<List<TaskResponseDto>> getTasksByFilter(@RequestParam(required = false) List<String> filterType,
+                                                                  @RequestParam String date)
     {
-        List<TaskResponseDto> filteredTask=taskService.getFilteredTasks(filterType);
+        List<TaskResponseDto> filteredTask=taskService.getFilteredTasks(filterType,date);
         return ResponseEntity.ok(filteredTask);
     }
 
