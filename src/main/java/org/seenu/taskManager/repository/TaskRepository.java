@@ -1,4 +1,5 @@
 package org.seenu.taskManager.repository;
+import jakarta.validation.constraints.FutureOrPresent;
 import org.seenu.taskManager.entity.Task;
 import org.seenu.taskManager.entity.TaskUser;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task,Long> {
-    boolean existsByTaskUserAndDueDate(TaskUser currentUser, LocalDateTime  dueDate);
     Task save(Task task);
 
     @Query("select t from Task t where t.taskUser.id=:userId and t.dueDate between :start and :end")
@@ -25,4 +25,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     @Override
     Optional<Task> findById(Long id);
     void deleteById(Long id);
+
+    boolean existsByTaskUserIdAndDueDateAndTaskName(Long userId, LocalDateTime dueDate, String taskName);
+
+
 }
