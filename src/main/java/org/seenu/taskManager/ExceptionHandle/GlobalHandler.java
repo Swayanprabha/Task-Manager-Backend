@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalHandler {
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<ErrorMessage> handleException(Exception e){
-        Integer statuscode= HttpStatus.INTERNAL_SERVER_ERROR.value();
-        ErrorMessage errorMessage = new ErrorMessage(e.getMessage(),statuscode);
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorMessage("something went wrong ",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+@ExceptionHandler({UserAlreadyExistsException.class,InvalidUserException.class})
+    public ResponseEntity<ErrorMessage> handleBadRequest(RuntimeException e){
+    return new ResponseEntity<>(new ErrorMessage(e.getMessage(),HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+}
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleNotFound(ResourceNotFoundException e) {
+        return new ResponseEntity<>(new ErrorMessage(e.getMessage(), HttpStatus.NOT_FOUND.value()), HttpStatus.NOT_FOUND);
+    }
 
 }

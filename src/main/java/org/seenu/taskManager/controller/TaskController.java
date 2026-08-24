@@ -3,19 +3,21 @@ import jakarta.validation.Valid;
 import org.seenu.taskManager.dto.TaskResponseDto;
 import org.seenu.taskManager.dto.UserTaskSaveRequestDto;
 import org.seenu.taskManager.service.TaskService;
+import org.seenu.taskManager.util.TaskUtil;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
-    TaskController(TaskService taskService) {
+    private final TaskUtil  taskUtil;
+    TaskController(TaskService taskService, TaskUtil taskUtil) {
+
         this.taskService = taskService;
+        this.taskUtil = taskUtil;
     }
     @PostMapping
     public ResponseEntity<String> addNewTask(@Valid @RequestBody  UserTaskSaveRequestDto userTaskSaveRequestDto)
@@ -26,7 +28,7 @@ public class TaskController {
     @GetMapping("/task/{day}")
     public ResponseEntity<List<TaskResponseDto>> getTasksByDay(@PathVariable String day)
     {
-        LocalDateTime today=LocalDateTime.parse(day);
+        LocalDate today=taskUtil.validateDate(day);
         List<TaskResponseDto> todayTasks=taskService.getAllTaskByDay(today);
         return ResponseEntity.ok(todayTasks);
     }
@@ -46,7 +48,8 @@ public class TaskController {
     public ResponseEntity<List<TaskResponseDto>> getTasksByFilter(@RequestParam(required = false) List<String> filterType,
                                                                   @RequestParam String date)
     {
-        List<TaskResponseDto> filteredTask=taskService.getFilteredTasks(filterType,date);
+        LocalDate parsedDate=taskUtil.validateDate(date);
+        List<TaskResponseDto> filteredTask=taskService.getFilteredTasks(filterType,parsedDate);
         return ResponseEntity.ok(filteredTask);
     }
 

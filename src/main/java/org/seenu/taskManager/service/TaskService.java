@@ -10,6 +10,8 @@ import org.seenu.taskManager.repository.TaskRepository;
 import org.seenu.taskManager.util.TaskUtil;
 import org.seenu.taskManager.util.UserAuthUtil;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +56,10 @@ public class TaskService {
        log.info("Task created successfully for userId={}, taskId={}", currentUser.getId(), savedTask.getId());
        return "Task added successfully.";
     }
-    public List<TaskResponseDto> getAllTaskByDay(LocalDateTime day) {
+    public List<TaskResponseDto> getAllTaskByDay(LocalDate day) {
        TaskUser currentUser=userAuthUtil.getTheContextUser();
-       LocalDateTime today=day.withHour(0).withMinute(0).withSecond(0);
-       LocalDateTime future=day.withHour(23).withMinute(59).withSecond(59);
+        LocalDateTime today = day.atStartOfDay();          // 2026-08-25T00:00:00
+        LocalDateTime future= day.plusDays(1).atStartOfDay(); // 2026-08-26T00:00:00
        log.info("Fetching tasks for userId={}, from={}, to={}", currentUser.getId(), today, future);
        List<Task> myallNewtasks=taskRepository.getUserTask(currentUser.getId(),today,future);
        List<TaskResponseDto> taskResponseDtoList = TaskUtil.giveMyTask(myallNewtasks);
@@ -112,9 +114,9 @@ public class TaskService {
        return "Task updated successfully.";
     }
 
-    public List<TaskResponseDto> getFilteredTasks(List<String> filterType, String date) {
+    public List<TaskResponseDto> getFilteredTasks(List<String> filterType, LocalDate date) {
        log.info("Applying filters {} to tasks for date={}", filterType, date);
-       List<TaskResponseDto> result= this.getAllTaskByDay(LocalDateTime.parse(date));
+       List<TaskResponseDto> result= this.getAllTaskByDay(date);
        if(result.isEmpty()){
            log.info("No tasks found for date={}, filters={} ", date, filterType);
            return result;

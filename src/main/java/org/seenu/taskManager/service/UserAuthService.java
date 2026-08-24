@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserSignUpService {
+public class UserAuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TaskUserRepository taskUserRepository;
     private final AuthenticationManager authenticationManager;
-    UserSignUpService(TaskUserRepository taskUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager)
+    UserAuthService(TaskUserRepository taskUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager)
     {
         this.taskUserRepository = taskUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
