@@ -1,5 +1,6 @@
 package org.seenu.taskManager.util;
 
+import org.seenu.taskManager.ExceptionHandle.InvalidUserException;
 import org.seenu.taskManager.dto.TaskResponseDto;
 import org.seenu.taskManager.entity.Task;
 
@@ -29,7 +30,7 @@ public class TaskUtil {
             return LocalDate.parse(date);
         }catch (Exception e)
         {
-            throw new RuntimeException("invalid date format, please enter as YYYY-MM-DD");
+            throw new InvalidUserException("invalid date format, please enter as YYYY-MM-DD");
         }
     }
 
