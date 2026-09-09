@@ -3,12 +3,13 @@ package org.seenu.taskManager.util;
 import org.seenu.taskManager.ExceptionHandle.InvalidUserException;
 import org.seenu.taskManager.dto.TaskResponseDto;
 import org.seenu.taskManager.entity.Task;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class TaskUtil {
     public static List<TaskResponseDto> giveMyTask(List<Task> tasks) {
         List<TaskResponseDto> taskResponseDtoList = new ArrayList<>();

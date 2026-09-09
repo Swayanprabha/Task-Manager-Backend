@@ -32,8 +32,8 @@ public class Authcontroller {
         return ResponseEntity.ok(Map.of("message", result));
     }
     @PostMapping("/signup")
-    public String VerifyOtpAndSave(@RequestParam(required = false) String otp,@RequestParam(required = false) String email){
-        String result= userAuthService.signUp(otp,email);
+    public ResponseEntity<Map<String, String>> VerifyOtpAndSave(@RequestParam(required = false) String otp,@RequestParam(required = false) String email){
+        String result= userAuthService.saveNewUser(otp,email);
         return ResponseEntity.ok(Map.of("message", result));
     }
 

@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.seenu.taskManager.ExceptionHandle.UserAlreadyExistsException;
 import org.seenu.taskManager.dto.UserLoginDto;
 import org.seenu.taskManager.dto.UserSignUpRequestDto;
@@ -20,22 +21,25 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class UserAuthService {
-    @Autowired
     private Cache<String, UserSignUpRequestDto> pendingUserCache;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TaskUserRepository taskUserRepository;
     private final AuthenticationManager authenticationManager;
     private final UserAuthUtil userAuthUtil;
+    private final SendMailService sendMailService;
     UserAuthService(TaskUserRepository taskUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                    AuthenticationManager authenticationManager, UserAuthUtil userAuthUtil)
+                    AuthenticationManager authenticationManager, UserAuthUtil userAuthUtil, Cache<String,
+                    UserSignUpRequestDto> pendingUserCache, SendMailService sendMailService)
     {
         this.taskUserRepository = taskUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.userAuthUtil = userAuthUtil;
+        this.pendingUserCache = pendingUserCache;
+        this.sendMailService = sendMailService;
     }
 
     public String cachTheUser(UserSignUpRequestDto userSignUpRequestDto) {
@@ -47,13 +51,9 @@ public class UserAuthService {
         try
         {
             pendingUserCache.put(mail,userSignUpRequestDto);
-            //mail to user here
-
-
-
-
-
-            return "User added to cache successfully with email: "+mail;
+            sendMailService.sendMailWithOtp(userSignUpRequestDto.getEmail(), currentUserOtp);
+            log.info("size of the cache"+pendingUserCache.estimatedSize());
+            return "User added to cache successfully with email " + mail + " and OTP is: " + currentUserOtp;
         }
         catch (Exception e)
         {
@@ -61,23 +61,23 @@ public class UserAuthService {
         }
 
     }
-//    public String signUp( String otp,String mail){
-//        UserSignUpRequestDto userSignUpRequestDto = pendingUserCache.getIfPresent(mail);
-//        if (userSignUpRequestDto == null) {
-//            throw new IllegalArgumentException("User not found in cache");
-//        }
-//        if (!userSignUpRequestDto.getOtp().equals(otp)) {
-//            throw new IllegalArgumentException("Invalid OTP")
-//        }
-//        String encriptedPassword=bCryptPasswordEncoder.encode(userSignUpRequestDto.getPassword());
-//        TaskUser newUser = new TaskUser();
-//        newUser.setName(userSignUpRequestDto.getName());
-//        newUser.setEmail(userSignUpRequestDto.getEmail());
-//        newUser.setPassword(encriptedPassword);
-//        taskUserRepository.save(newUser);
-//        return "User signed up successfully with email: "+userSignUpRequestDto.getEmail();
-//
-//    }
+    public String saveNewUser( String otp,String mail){
+        UserSignUpRequestDto userSignUpRequestDto = pendingUserCache.getIfPresent(mail);
+        if (userSignUpRequestDto == null) {
+            throw new IllegalArgumentException("User not found in cache");
+        }
+        if (!userSignUpRequestDto.getOtp().equals(otp)) {
+            throw new IllegalArgumentException("Invalid OTP");
+        }
+        String encriptedPassword=bCryptPasswordEncoder.encode(userSignUpRequestDto.getPassword());
+        TaskUser newUser = new TaskUser();
+        newUser.setName(userSignUpRequestDto.getName());
+        newUser.setEmail(userSignUpRequestDto.getEmail());
+        newUser.setPassword(encriptedPassword);
+        taskUserRepository.save(newUser);
+        return "User signed up successfully with email: "+userSignUpRequestDto.getEmail();
+
+    }
 
     public String validLogIn(@Valid UserLoginDto userLoginDto, HttpServletRequest request) {
    Authentication auth=authenticationManager.
